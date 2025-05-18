@@ -1,7 +1,20 @@
 const express = require('express');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express()
+
+const CDB = mongoose.connect(process.env.MONGO_DB_LINK,{
+   // useNewURLParser:true,
+    //useUnifiedTopology:true,
+});
+
+CDB.then(()=>{
+    console.log("Connected")
+}).catch(()=>{
+    console.log("Error occured")
+})
+
 
 app.get('/',(req,res)=>res.send('App is running'))
 
