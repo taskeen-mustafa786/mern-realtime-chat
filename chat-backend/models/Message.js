@@ -15,3 +15,5 @@ const MessageSchema = mongoose.Schema({
         default:Date.now()
     } 
 });
+
+modules.exports = mongoose.model("message",MessageSchema);
