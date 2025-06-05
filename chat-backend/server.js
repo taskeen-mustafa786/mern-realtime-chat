@@ -1,30 +1,44 @@
-const express = require('express');
-const mongoose = require('mongoose');
-require('dotenv').config();
-const messageRoutes = require('./routes/messageRoutes')
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const http = require("http");
+const socketIO = require("socket.io");
 
+dotenv.config();
 
-
-const app = express()
-app.use("/api/messages", messageRoutes);
-
-const CDB = mongoose.connect(process.env.MONGO_DB_LINK,{
-   // useNewURLParser:true,
-    //useUnifiedTopology:true,
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server, {
+  cors: {
+    origin: "http://localhost:3000", // adjust to your frontend origin
+    methods: ["GET", "POST"]
+  }
 });
 
-CDB.then(()=>{
-    console.log("Connected")
-}).catch(()=>{
-    console.log("Error occured")
-})
+// Middlewares
+app.use(cors());
+app.use(express.json());
 
+// Routes
+const messageRoutes = require("./routes/messageRoutes");
+app.use("/api/messages", messageRoutes);
 
+// MongoDB Connection
+mongoose
+  .connect(process.env.MONGO_DB_LINK, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+// Socket.IO Real-time Chat
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("sendMessage", ({ sender, receiver, message }) => {
-    socket.broadcast.emit("receiveMessage", { sender, message }); // send to all except sender
+    socket.broadcast.emit("receiveMessage", { sender, message });
   });
 
   socket.on("disconnect", () => {
@@ -32,9 +46,9 @@ io.on("connection", (socket) => {
   });
 });
 
+// Default Route
+app.get("/", (req, res) => res.send("App is running"));
 
-
-app.get('/',(req,res)=>res.send('App is running'))
-
-const port = process.env.PORT || 5500
-app.listen(port,()=>console.log("Server is running on port# ",port))
+// Start Server
+const PORT = process.env.PORT || 5500;
+server.listen(PORT, () => console.log("Server is running on port", PORT));
