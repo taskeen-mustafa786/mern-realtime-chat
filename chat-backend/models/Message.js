@@ -1,19 +1,12 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const MessageSchema = mongoose.Schema({
-    sender:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
-    },
-    reciever:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    },
-    message:String,
-    timestamp:{
-        type:Date,
-        default:Date.now()
-    } 
-});
+const MessageSchema = new mongoose.Schema(
+  {
+    sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    message: { type: String, required: true }
+  },
+  { timestamps: true }
+);
 
-modules.exports = mongoose.model("message",MessageSchema);
+module.exports = mongoose.model("Message", MessageSchema);
