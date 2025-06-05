@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import Login from "./components/Login";
+import Chat from "./components/Chat";
 import './App.css'
 
 function App() {
@@ -6,7 +9,11 @@ function App() {
   return (
     <>
       <div>
-        
+         {user ? (
+        <Chat currentUser={user} />
+      ) : (
+        <Login onLoginSuccess={setUser} />
+      )}
       </div>
     </>
   )
