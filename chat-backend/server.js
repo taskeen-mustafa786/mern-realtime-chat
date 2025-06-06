@@ -33,6 +33,12 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+
+
 // Socket.IO Real-time Chat
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
